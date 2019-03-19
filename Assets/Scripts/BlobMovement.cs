@@ -43,9 +43,7 @@ public class BlobMovement : MonoBehaviour
         }
 
         var a = horizontalAcceleration * Time.deltaTime;
-
         bool inputGiven = false;
-
         if (Input.GetKey(movement.left))
         {
             hspeed -= a;
@@ -56,7 +54,6 @@ public class BlobMovement : MonoBehaviour
             hspeed += a;
             inputGiven = true;
         }
-
         if (!inputGiven)
         {
             // revert to zero
@@ -69,6 +66,7 @@ public class BlobMovement : MonoBehaviour
                 hspeed += (hspeed < 0 ? 1 : -1) * a;
             }
         }
+        hspeed = Mathf.Clamp(hspeed, -horizontalSpeed, horizontalSpeed);
 
         if (Input.GetKey(movement.shoot))
         {
@@ -80,12 +78,18 @@ public class BlobMovement : MonoBehaviour
             graphics.MouthOpened = false;
         }
 
-        hspeed = Mathf.Clamp(hspeed, -horizontalSpeed, horizontalSpeed);
-
-        if (!grounded)
+        if (grounded)
+        {
+            if (Input.GetKeyDown(movement.jump))
+            {
+                blob.AddForce(blob.transform.up * 7.5f, ForceMode2D.Impulse);
+            }
+        }
+        else
         {
             // correctly rotate blob
             blob.angularVelocity = -5f * blob.rotation;
+
         }
     }
 
@@ -95,6 +99,7 @@ public class BlobMovement : MonoBehaviour
         {
             lastShot = Time.time;
             var p = Instantiate(particle, particleSpawn.position + (Vector3)Random.insideUnitCircle * 0.2f, Quaternion.identity);
+            p.name = "Bleep0";
             Destroy(p, 5f);
             var rig = p.GetComponent<Rigidbody2D>();
             rig.angularVelocity = 360f * Random.value;
