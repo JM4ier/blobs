@@ -17,6 +17,18 @@ public class BlobBehaviour : MonoBehaviour
     private Vector2 displacement;
     public float displacementSpeed;
 
+    public bool MouthOpened
+    {
+        get
+        {
+            return sprites.mouthOpened.enabled;
+        }
+        set
+        {
+            sprites.mouthOpened.enabled = value;
+            sprites.mouthClosed.enabled = !value;
+        }
+    }
     void Start()
     {
         displacement = Vector2.zero;
