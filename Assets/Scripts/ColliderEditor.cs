@@ -7,21 +7,23 @@ public class ColliderEditor : MonoBehaviour
 
     public float partitionSize = 0.05f, width = 0.02f;
     public LayerMask sourceLayer;
-    public LayerMask outputLayer0, outputLayer1;
     public Sprite sprite;
-    public Color color0, color1;
+    public PlayerColors playerColors;
 
     [ContextMenu("Process all colliders")]
     void EditColliders()
     {
         var parent = new GameObject("Colliders");
         parent.tag = "Generated Slip-Colliders";
+        int i = 0;
         foreach (var c in FindObjectsOfType<BoxCollider2D>())
         {
-            if (sourceLayer == c.gameObject.layer || true)
+            if (sourceLayer == (sourceLayer | (1 << c.gameObject.layer)))
             {
                 var go = ProcessCollider(c, partitionSize, width, sprite);
+                go.name = go.name + i;
                 go.transform.SetParent(parent.transform, true);
+                i++;
             }
         }
     }
@@ -41,7 +43,7 @@ public class ColliderEditor : MonoBehaviour
         go.tag = "Generated Slip-Colliders";
         var corners = WorldSpaceCorners(collider);
 
-        float rotation = collider.transform.localRotation.z + 90f;
+        float rotation = collider.transform.rotation.eulerAngles.z + 90f;
         var size = new Vector2(partitionSize, width);
 
         for (int i = 0; i < corners.Length; i++)
@@ -73,30 +75,34 @@ public class ColliderEditor : MonoBehaviour
         go.transform.localRotation = Quaternion.Euler(0, 0, rotation);
         go.transform.localScale = new Vector3(size.x * 1.25f, size.y * randHeight, 1);
 
-        var collider0 = go.AddComponent<BoxCollider2D>();
-        var collider1 = go.AddComponent<BoxCollider2D>();
         var trigger = go.AddComponent<BoxCollider2D>();
         var renderer = go.AddComponent<SpriteRenderer>();
         var surface = go.AddComponent<SlipperySurface>();
 
         var colliderSize = new Vector2(0.8f, 1 / randHeight);
-        collider0.size = colliderSize;
-        
-        collider1.size = colliderSize;
-        trigger.size = colliderSize * 2f;
 
+        surface.renderer = renderer;
+        surface.colliders = new BoxCollider2D[playerColors.Players];
+        surface.playerColors = playerColors;
+
+        for (int i = 0; i < playerColors.Players; i++)
+        {
+            var name = "Player" + i;
+            var child = new GameObject(name);
+            var coll = child.AddComponent<BoxCollider2D>();
+            coll.size = colliderSize;
+            child.layer = LayerMask.NameToLayer(name);
+            child.transform.SetParent(go.transform, false);
+            surface.colliders[i] = coll;
+        }
+
+        trigger.size = colliderSize * 2f;
         trigger.isTrigger = true;
 
         renderer.sprite = sprite;
         renderer.color = Color.black;
-        renderer.sortingOrder = 5;
+        renderer.sortingOrder = 200;
         renderer.enabled = false;
-
-        surface.collider0 = collider0;
-        surface.collider1 = collider1;
-        surface.renderer = renderer;
-        surface.color0 = color0;
-        surface.color1 = color1;
 
         return go;
     }

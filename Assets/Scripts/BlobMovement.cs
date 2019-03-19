@@ -22,6 +22,8 @@ public class BlobMovement : MonoBehaviour
     public GameObject particle;
     public Transform particleSpawn;
     public float shootDelay = 0.05f;
+    public PlayerColors colors;
+    public int playerIndex;
     #endregion
     #region Variables
     private float hspeed;
@@ -105,7 +107,7 @@ public class BlobMovement : MonoBehaviour
             rig.angularVelocity = 360f * Random.value;
             rig.velocity = 2f * blob.velocity;
             var renderer = p.GetComponent<SpriteRenderer>();
-            renderer.color = RandomizeColor(renderer.color, 0.2f);
+            renderer.color = RandomizeColor(colors.GetParticleColor(playerIndex), 0.2f);
         }
     }
 

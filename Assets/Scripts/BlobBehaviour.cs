@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class BlobBehaviour : MonoBehaviour
 {
     public Rigidbody2D rig;
@@ -16,6 +17,9 @@ public class BlobBehaviour : MonoBehaviour
     public Vector2 maxDisplacement = Vector2.one;
     private Vector2 displacement;
     public float displacementSpeed;
+
+    public PlayerColors playerColors;
+    public int playerIndex;
 
     public bool MouthOpened
     {
@@ -34,10 +38,19 @@ public class BlobBehaviour : MonoBehaviour
         displacement = Vector2.zero;
         maxDisplacement.x = Mathf.Abs(maxDisplacement.x);
         maxDisplacement.y = Mathf.Abs(maxDisplacement.y);
+
+
     }
 
     void Update()
     {
+        // updating color
+        var col = playerColors.GetPlayerColor(playerIndex);
+        col.a = 1;
+        sprites.body.color = col;
+        sprites.mouthClosed.color = col;
+        sprites.mouthOpened.color = col;
+
         var threshold = 0.75f;
         var v = rig.velocity;
         v = rig.transform.InverseTransformVector(v);

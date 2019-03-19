@@ -5,29 +5,28 @@ using UnityEngine;
 public class SlipperySurface : MonoBehaviour
 {
 
-    public BoxCollider2D collider0, collider1;
+    public BoxCollider2D[] colliders;
     new public SpriteRenderer renderer;
-    public Color color0, color1;
-
+    public PlayerColors playerColors;
     public float randColor = 0.2f;
+
+    void Start()
+    {
+        Reset();
+    }
 
     void OnTriggerEnter2D(Collider2D collider)
     {
-        if (collider.name.Equals("Bleep0"))
+        for (int i = 0; i < playerColors.Players; i++)
         {
-            collider0.enabled = false;
-            collider1.enabled = true;
-            renderer.color = RandomizeColor(color0, randColor);
-            renderer.enabled = true;
-            Destroy(collider.gameObject);
-        }
-        else if (collider.name.Equals("Bleep1"))
-        {
-            collider0.enabled = true;
-            collider1.enabled = false;
-            renderer.color = RandomizeColor(color1, randColor);
-            renderer.enabled = true;
-            Destroy(collider.gameObject);
+            colliders[i].enabled = false;
+            if (collider.name.Equals("Bleep" + i))
+            {
+                colliders[i].enabled = true;
+                renderer.color = RandomizeColor(playerColors.GetParticleColor(i), randColor);
+                renderer.enabled = true;
+                Destroy(collider.gameObject);
+            }
         }
     }
 
@@ -36,8 +35,10 @@ public class SlipperySurface : MonoBehaviour
         if (renderer != null)
         {
             renderer.enabled = false;
-            collider0.enabled = false;
-            collider1.enabled = false;
+            for (int i = 0; i < playerColors.Players; i++)
+            {
+                colliders[i].enabled = false;
+            }
         }
     }
 
