@@ -15,6 +15,7 @@ public class ObjectFollower : MonoBehaviour
     {
         float lerpFac = 1 - Mathf.Pow(1 - moveFactor, Time.deltaTime);
         var t = Camera.main.transform;
-        t.position = new Vector3(Mathf.Lerp(t.position.x, target.position.x, lerpFac), t.position.y, t.position.z);
+        t.position = new Vector3(Mathf.Lerp(t.position.x, target.position.x, lerpFac),
+        Mathf.Lerp(t.position.y, target.position.y, lerpFac), t.position.z);
     }
 }

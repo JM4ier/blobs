@@ -101,7 +101,7 @@ public class BlobMovement : MonoBehaviour
         {
             lastShot = Time.time;
             var p = Instantiate(particle, particleSpawn.position + (Vector3)Random.insideUnitCircle * 0.2f, Quaternion.identity);
-            p.name = "Bleep0";
+            p.name = "Bleep"+playerIndex;
             Destroy(p, 5f);
             var rig = p.GetComponent<Rigidbody2D>();
             rig.angularVelocity = 360f * Random.value;

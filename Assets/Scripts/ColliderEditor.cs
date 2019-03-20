@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEditor;
 
 public class ColliderEditor : MonoBehaviour
 {
@@ -26,15 +27,7 @@ public class ColliderEditor : MonoBehaviour
                 i++;
             }
         }
-    }
-
-    [ContextMenu("Delete all generated colliders")]
-    void DeleteColliders()
-    {
-        foreach (var go in GameObject.FindGameObjectsWithTag("Generated Slip-Colliders"))
-        {
-            Destroy(go);
-        }
+        Undo.RegisterCreatedObjectUndo(parent, "Generated Colliders");
     }
 
     GameObject ProcessCollider(BoxCollider2D collider, float partitionSize, float width, Sprite sprite)
