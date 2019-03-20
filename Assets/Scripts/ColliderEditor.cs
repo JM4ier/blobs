@@ -12,6 +12,8 @@ public class ColliderEditor : MonoBehaviour
     public PlayerColors playerColors;
     public int outputLayer;
     public PhysicsMaterial2D surfaceMaterial;
+    public Material colliderMaterial;
+    public Sprite colliderSprite;
 
     [ContextMenu("Process all colliders")]
     void EditColliders()
@@ -56,10 +58,16 @@ public class ColliderEditor : MonoBehaviour
             rotation = (rotation + 90) % 360;
         }
 
-        // change material of collider
+        // change physics material of collider
         Undo.RecordObject(collider, "Changed Surface Material");
         collider.sharedMaterial = surfaceMaterial;
 
+        // change material of gameobject with collider
+        var renderer = collider.GetComponent<SpriteRenderer>();
+        Undo.RecordObject(renderer, "Changed appearance");
+        renderer.sprite = colliderSprite;
+        renderer.sharedMaterial = colliderMaterial;
+        
         return go;
     }
 

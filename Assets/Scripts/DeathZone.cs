@@ -14,7 +14,6 @@ public class DeathZone : MonoBehaviour
         {
             obj.Reset();
         }
-        Debug.Log(resetObjects.Count + " objects in zone");
     }
 
 }

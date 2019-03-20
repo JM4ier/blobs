@@ -26,7 +26,6 @@ public class SlipperySurface : MonoBehaviour
 
                 renderer.color = RandomizeColor(playerColors.GetParticleColor(playerIndex), randColor);
                 renderer.enabled = true;
-
                 Destroy(collision.collider.gameObject);
             }
         }
@@ -37,6 +36,7 @@ public class SlipperySurface : MonoBehaviour
         playerIndex = -1;
         if (renderer != null)
         {
+            renderer.color = Color.black;
             renderer.enabled = false;
         }
     }

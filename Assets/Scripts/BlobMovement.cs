@@ -24,12 +24,14 @@ public class BlobMovement : MonoBehaviour, IReset
     public float shootDelay = 0.05f;
     public PlayerColors colors;
     public int playerIndex;
+    public float groundedDistance = 0.2f;
     #endregion
     #region Variables
     private Vector3 startPosition;
     private float hspeed;
     private bool grounded;
     private float lastShot;
+    public bool horizontalControlEnabled;
     #endregion
 
     void Start()
@@ -37,22 +39,11 @@ public class BlobMovement : MonoBehaviour, IReset
         horizontalSpeed = Mathf.Abs(horizontalSpeed);
         blob.centerOfMass = blob.transform.InverseTransformPoint(centerOfMass.position);
         startPosition = blob.position;
+        horizontalControlEnabled = true;
     }
 
     void Update()
     {
-        grounded = false;
-        int raycasts = 3;
-        for (int i = -raycasts; i <= raycasts; i++)
-        {
-            var pos = blobBottom.position + Vector3.right * (float)(i) / (float)(raycasts) * blobBottom.localScale.x;
-            if (Physics2D.Raycast(pos, -blobBottom.up, 0.1f, jumpable))
-            {
-                grounded = true;
-                break;
-            }
-        }
-
 
         var a = horizontalAcceleration * Time.deltaTime;
         bool inputGiven = false;
@@ -90,6 +81,19 @@ public class BlobMovement : MonoBehaviour, IReset
             graphics.MouthOpened = false;
         }
 
+        grounded = false;
+        int raycasts = 3;
+        for (int i = -raycasts; i <= raycasts; i++)
+        {
+            var pos = blobBottom.position + blobBottom.right * (float)(i) / (float)(raycasts) * blobBottom.localScale.x;
+            if (Physics2D.Raycast(pos, -blobBottom.up, groundedDistance, jumpable))
+            {
+                grounded = true;
+                break;
+            }
+        }
+
+
         if (grounded)
         {
             if (Input.GetKeyDown(movement.jump))
@@ -100,14 +104,14 @@ public class BlobMovement : MonoBehaviour, IReset
             else
             {
                 // pull downwards
-                blob.AddForce(- blob.transform.up * 0.5f * Time.deltaTime);
+                blob.AddForce(-blob.transform.up * 0.1f);
             }
         }
         else
         {
             // correctly rotate blob
-            blob.angularVelocity = -5f * blob.rotation;
-
+            float max = 200f;
+            blob.angularVelocity = Mathf.Clamp(-5f * blob.rotation, -max, max);
         }
     }
 
@@ -132,6 +136,7 @@ public class BlobMovement : MonoBehaviour, IReset
         transform.position = startPosition;
         blob.velocity = Vector3.zero;
         blob.angularVelocity = 0f;
+        hspeed = 0;
     }
     Color RandomizeColor(Color color, float diff)
     {
@@ -145,7 +150,10 @@ public class BlobMovement : MonoBehaviour, IReset
     void FixedUpdate()
     {
         var localVelocity = blob.transform.InverseTransformVector(blob.velocity);
-        localVelocity.x = hspeed;
+        if (horizontalControlEnabled)
+        {
+            localVelocity.x = hspeed;
+        }
         var targetVelocity = blob.transform.TransformVector(localVelocity);
         blob.AddForce(new Vector2(targetVelocity.x, targetVelocity.y) - blob.velocity);
     }
