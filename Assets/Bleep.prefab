@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1401970880391286022}
   - component: {fileID: 1401970880391286023}
   - component: {fileID: 1401970880391286016}
-  m_Layer: 10
+  m_Layer: 12
   m_Name: Bleep
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -5,40 +5,39 @@ using UnityEngine;
 public class SlipperySurface : MonoBehaviour
 {
 
-    public BoxCollider2D[] colliders;
     new public SpriteRenderer renderer;
     public PlayerColors playerColors;
-    public float randColor = 0.2f;
+    public float randColor = 0.3f;
+
+    public int playerIndex;
 
     void Start()
     {
         Reset();
     }
 
-    void OnTriggerEnter2D(Collider2D collider)
+    void OnCollisionEnter2D(Collision2D collision)
     {
         for (int i = 0; i < playerColors.Players; i++)
         {
-            colliders[i].enabled = false;
-            if (collider.name.Equals("Bleep" + i))
+            if (collision.collider.gameObject.name.Equals("Bleep" + i))
             {
-                colliders[i].enabled = true;
-                renderer.color = RandomizeColor(playerColors.GetParticleColor(i), randColor);
+                playerIndex = i;
+
+                renderer.color = RandomizeColor(playerColors.GetParticleColor(playerIndex), randColor);
                 renderer.enabled = true;
-                Destroy(collider.gameObject);
+
+                Destroy(collision.collider.gameObject);
             }
         }
     }
 
     public void Reset()
     {
+        playerIndex = -1;
         if (renderer != null)
         {
             renderer.enabled = false;
-            for (int i = 0; i < playerColors.Players; i++)
-            {
-                colliders[i].enabled = false;
-            }
         }
     }
 

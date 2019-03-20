@@ -10,6 +10,8 @@ public class ColliderEditor : MonoBehaviour
     public LayerMask sourceLayer;
     public Sprite sprite;
     public PlayerColors playerColors;
+    public int outputLayer;
+    public PhysicsMaterial2D surfaceMaterial;
 
     [ContextMenu("Process all colliders")]
     void EditColliders()
@@ -54,6 +56,10 @@ public class ColliderEditor : MonoBehaviour
             rotation = (rotation + 90) % 360;
         }
 
+        // change material of collider
+        Undo.RecordObject(collider, "Changed Surface Material");
+        collider.sharedMaterial = surfaceMaterial;
+
         return go;
     }
 
@@ -64,33 +70,19 @@ public class ColliderEditor : MonoBehaviour
         var go = new GameObject("ColliderPart");
         go.tag = "Generated Slip-Colliders";
 
+        go.layer = outputLayer;
         go.transform.position = position;
         go.transform.localRotation = Quaternion.Euler(0, 0, rotation);
-        go.transform.localScale = new Vector3(size.x * 1.25f, size.y * randHeight, 1);
+        go.transform.localScale = new Vector3(size.x * 1.2f, size.y * randHeight, 1);
 
-        var trigger = go.AddComponent<BoxCollider2D>();
         var renderer = go.AddComponent<SpriteRenderer>();
         var surface = go.AddComponent<SlipperySurface>();
+        var collider = go.AddComponent<BoxCollider2D>();
 
-        var colliderSize = new Vector2(0.8f, 1 / randHeight);
+        collider.size = Vector2.one;
 
         surface.renderer = renderer;
-        surface.colliders = new BoxCollider2D[playerColors.Players];
         surface.playerColors = playerColors;
-
-        for (int i = 0; i < playerColors.Players; i++)
-        {
-            var name = "Player" + i;
-            var child = new GameObject(name);
-            var coll = child.AddComponent<BoxCollider2D>();
-            coll.size = colliderSize;
-            child.layer = LayerMask.NameToLayer(name);
-            child.transform.SetParent(go.transform, false);
-            surface.colliders[i] = coll;
-        }
-
-        trigger.size = colliderSize * 2f;
-        trigger.isTrigger = true;
 
         renderer.sprite = sprite;
         renderer.color = Color.black;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BlobMovement : MonoBehaviour
+public class BlobMovement : MonoBehaviour, IReset
 {
     #region Inspector Variables
     [System.Serializable]
@@ -20,12 +20,13 @@ public class BlobMovement : MonoBehaviour
     public LayerMask jumpable;
     public BlobBehaviour graphics;
     public GameObject particle;
-    public Transform particleSpawn;
+    public Transform particleSpawn, centerOfMass;
     public float shootDelay = 0.05f;
     public PlayerColors colors;
     public int playerIndex;
     #endregion
     #region Variables
+    private Vector3 startPosition;
     private float hspeed;
     private bool grounded;
     private float lastShot;
@@ -34,15 +35,24 @@ public class BlobMovement : MonoBehaviour
     void Start()
     {
         horizontalSpeed = Mathf.Abs(horizontalSpeed);
+        blob.centerOfMass = blob.transform.InverseTransformPoint(centerOfMass.position);
+        startPosition = blob.position;
     }
 
     void Update()
     {
         grounded = false;
-        if (Physics2D.Raycast(blobBottom.position, -blobBottom.up, 0.5f, jumpable))
+        int raycasts = 3;
+        for (int i = -raycasts; i <= raycasts; i++)
         {
-            grounded = true;
+            var pos = blobBottom.position + Vector3.right * (float)(i) / (float)(raycasts) * blobBottom.localScale.x;
+            if (Physics2D.Raycast(pos, -blobBottom.up, 0.1f, jumpable))
+            {
+                grounded = true;
+                break;
+            }
         }
+
 
         var a = horizontalAcceleration * Time.deltaTime;
         bool inputGiven = false;
@@ -84,7 +94,13 @@ public class BlobMovement : MonoBehaviour
         {
             if (Input.GetKeyDown(movement.jump))
             {
+                // jump
                 blob.AddForce(blob.transform.up * 7.5f, ForceMode2D.Impulse);
+            }
+            else
+            {
+                // pull downwards
+                blob.AddForce(- blob.transform.up * 0.5f * Time.deltaTime);
             }
         }
         else
@@ -101,7 +117,7 @@ public class BlobMovement : MonoBehaviour
         {
             lastShot = Time.time;
             var p = Instantiate(particle, particleSpawn.position + (Vector3)Random.insideUnitCircle * 0.2f, Quaternion.identity);
-            p.name = "Bleep"+playerIndex;
+            p.name = "Bleep" + playerIndex;
             Destroy(p, 5f);
             var rig = p.GetComponent<Rigidbody2D>();
             rig.angularVelocity = 360f * Random.value;
@@ -111,6 +127,12 @@ public class BlobMovement : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        transform.position = startPosition;
+        blob.velocity = Vector3.zero;
+        blob.angularVelocity = 0f;
+    }
     Color RandomizeColor(Color color, float diff)
     {
         return new Color(

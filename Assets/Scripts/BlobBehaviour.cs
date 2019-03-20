@@ -38,8 +38,6 @@ public class BlobBehaviour : MonoBehaviour
         displacement = Vector2.zero;
         maxDisplacement.x = Mathf.Abs(maxDisplacement.x);
         maxDisplacement.y = Mathf.Abs(maxDisplacement.y);
-
-
     }
 
     void Update()
