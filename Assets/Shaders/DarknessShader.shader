@@ -108,10 +108,9 @@ Shader "Sprites/Darkness"
                     float2 dif = IN.worldPos.xy - _Lights[i].xy;
                     fac *= light(length(dif), _Lights[i].z);
                 }
-                fac *= saturate(abs(IN.worldPos.y - borderHeight(IN.worldPos.x)) / 4);
+                fac *= saturate((IN.worldPos.y - borderHeight(IN.worldPos.x)) / 4.5);
                 fac = saturate(fac);
-                c.rgba = fac * _Dark + (1-fac) * _Light;
-                // c.rgb *= c.a;
+                c.rgba = lerp(fixed4(lerp(0, _Light.rgb, _Light.a), _Light.a), _Dark, fac);
                 return c;
             }
         ENDCG

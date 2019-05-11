@@ -48,7 +48,7 @@
             float2 distortion(float2 pos)
             {
                 // return float2(0.1 * sin(_Time.w), cos(pos.y) * cos(_Time.w));
-                return float2(sin(100*pos.x - sin(_Time.w)), cos(100*pos.y + _Time.z));
+                return float2(sin(100*pos.x - sin(_Time.w) + cos(57 * pos.y)), cos(100*pos.y + _Time.z + pos.x * 20));
             }
 
             float distortion_factor (float2 pos)

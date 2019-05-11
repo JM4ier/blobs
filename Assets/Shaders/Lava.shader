@@ -6,6 +6,7 @@
         _Color ("Tint", Color) = (1,1,1,1)
         _FogColor ("Fog Color", Color) = (0, 0, 0, 0.5)
         _SurfaceHeight ("Lava Height", Float) = -10
+        _Intensity ("Intensity", Float) = 1
     }
 
     SubShader
@@ -51,6 +52,7 @@
             fixed4 _Color;
             fixed4 _FogColor;
             float _SurfaceHeight;
+            float _Intensity;
 
             v2f vert(appdata_t IN)
             {
@@ -100,7 +102,7 @@
                     }
                 }
                 
-                return saturate(c);
+                return saturate(c) * _Intensity;
             }
         ENDCG
         }
