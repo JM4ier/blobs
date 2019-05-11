@@ -25,6 +25,8 @@ public class BlobMovement : MonoBehaviour, IReset
     public PlayerColors colors;
     public int playerIndex;
     public float groundedDistance = 0.2f;
+    public GameObject deathEffect;
+    public DarknessControl darkness;
     #endregion
     #region Variables
     private Vector3 startPosition;
@@ -133,6 +135,10 @@ public class BlobMovement : MonoBehaviour, IReset
 
     public void Reset()
     {
+        FindObjectOfType<BlobScore>().IncreaseScore(playerIndex);
+        var vfx = Instantiate(deathEffect, transform.position, Quaternion.identity);
+        darkness.lightSources.Add(vfx.transform);
+        Destroy(vfx, 3f);
         transform.position = startPosition;
         blob.velocity = Vector3.zero;
         blob.angularVelocity = 0f;
