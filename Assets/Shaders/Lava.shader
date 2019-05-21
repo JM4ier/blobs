@@ -101,8 +101,11 @@
                         c.a += _FogColor.a;
                     }
                 }
-                
-                return saturate(c) * _Intensity;
+
+                c.rgb = saturate(c.rgb) * _Intensity;
+                c.a = saturate(c.a);
+
+                return c;
             }
         ENDCG
         }
