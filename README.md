@@ -7,4 +7,5 @@ You can play it online [here](https://jm4ier.github.io/blobs/)
 
 ## keybinds
 player one: wasd
+
 player two: arrow keys
